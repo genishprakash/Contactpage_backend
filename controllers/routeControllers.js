@@ -8,7 +8,7 @@ const myContacts = require("../models/contactModel.js")
 const getController = asyncHandler(async (req, res) => {
     // Get all the contact information
 
-    const contacts = await myContacts.find()
+    const contacts = await myContacts.find({user_id:req.user.id})
     res.status(200).json(contacts)
     res.status(200).json({ msg: "Get the contacts details" })
 
@@ -27,7 +27,8 @@ const postController = asyncHandler(async (req, res) => {
     const contact = await myContacts.create({
         name,
         email,
-        phone
+        phone,
+        user_id:req.user.id
     })
     res.status(201).json(contact)
 })
@@ -37,6 +38,7 @@ const postController = asyncHandler(async (req, res) => {
 
 const getControllerid = asyncHandler(async (req, res) => {
     try {
+
         const contact = await myContacts.findById(req.params.id)
         res.status(200).json(contact)
 
@@ -54,12 +56,19 @@ const getControllerid = asyncHandler(async (req, res) => {
 // @ access public
 const putController = asyncHandler(async (req, res) => {
     try {
-
+        console.log(req.params.id);
+        const Contact = await myContacts.findById(
+            req.params.id)
+        
+        
+        if(Contact.user_id.toString()!== req.user.id){
+            res.status(403)
+            throw new Error("Forbidden You dont have access")
+        }
         const updatedContact = await myContacts.findByIdAndUpdate(
             req.params.id,
             req.body,
             { new: true })
-        console.log(updatedContact);
         res.status(200).json(updatedContact)
     }
     catch (err) {
@@ -74,6 +83,13 @@ const putController = asyncHandler(async (req, res) => {
 
 const deleteController = asyncHandler(async (req, res) => {
     try {
+        const contact=await myContacts.findById(req.params.id)
+
+        if(contact.user_id.toString()!==req.user.id){
+            res.status(403)
+            throw new Error("Forbidden You dont have access")
+
+        }
         const deletedContact = await myContacts.findByIdAndRemove(req.params.id);
         res.status(200).json({ msg: `Deleted a contact ${req.params.id}` })
     }catch(err){

@@ -7,6 +7,7 @@ const bcrypt=require('bcrypt')
 const jwt=require('jsonwebtoken')
 
 const registerController = asyncHandler(async (req, res) => {
+    
     const {username,email,password}=req.body
 
     if(!username || !email || ! password){

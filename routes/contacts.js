@@ -9,6 +9,9 @@ const {
     putController,
     deleteController
 }=require("../controllers/routeControllers")
+const validateToken = require("../middleware/validateTokenHandler")
+
+router.use(validateToken)
 
 router.route("/").get(getController)
 

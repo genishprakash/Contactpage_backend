@@ -1,4 +1,4 @@
-const { Timestamp } = require('mongodb')
+
 const mongoose = require('mongoose')
 
 const userSchema = mongoose.Schema({
